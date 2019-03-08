@@ -7,6 +7,7 @@
         #intro { float:right;width:75%;margin-left:50px;margin-right:100px; 
                  font-size:large; }
         img { float:right;padding:15px;padding-right:40px;}
+        video { float:right;padding:15px;padding-right:40px;}
         #rside { position:absolute;top:20%; }
 
       </style>
@@ -52,17 +53,29 @@
       of this program is an .html (about 200 lines) that is embedded in the esp read only memory 
       at compile time (if referenced in component.mk). The .html file is via tcp to your 
       browser when the esp's url is addressed.
-
+      </p>
+      <p>
       The JavaScript in the .html has a couple of functions:
       <ul>
           <li>control of plot modes, ie run/pause, display data type raw/filtered</li>
           <li>send GET query variable data from browser tags to esp 
               (for things like controlling led brightness)</li>
+          <video  width="50%" height="50%" controls>
+             <source src="./hr.mp4" type="video/mp4">
+          </video>
           <li>downloads plotly.js for handelling graph real time output display</li>
           <li>formats data returned from esp into plotly format</li>
           <li>performs dsp operations to bandpass filter (4 pole butterworh) raw data 
               and extract and display heartrate and oxygen concentration measurements</li>
       </ul>
+      </p>
+      <p>
+      The video starts out with no finger on the max30102 so it just shows noise. When it finger
+      is placed on the module there is a big spike in the graph due to the samples shotting up to 
+      almost fullscale, the IIR filter takes a little while to filter out the dc and the heart
+      beats show up pretty clearly. The intensity of red and ir diodes can be changed, and the
+      updating can be halted. The heart rate and SpO2 concentrations are calculated and displayed.
+      </p>
    </div>
          
    <ul id="rside">
