@@ -26,7 +26,7 @@
       <figure>
         <img src="./proj1/helloworld.png" style="width:100%">
         <figcaption>
-           <a href="./proj1/index.html">esp32 heartrate monitor</a>
+           <a href="./proj1/index.html">esp32 simple website</a>
         </figcaption>
         <p>ESP32 serving up a simple webpage. The same code verified
         in ESP8266_RTOS_SDK environment for esp8266.
@@ -38,10 +38,15 @@
       <figure>
         <img src="./proj2/hr.png" style="width:100%">
         <figcaption>
-           <a href="./proj2/index.html">esp32 simple website</a>
+           <a href="./proj2/index.html">esp32 heartrate monitor</a>
         </figcaption>
-        <p>An ESP32 is programmed to serve up a simple website
-        </p> 
+        <p>
+        ESP32 serving up a webpage with live update of MAX30102 sample
+        data. The esp32 initializes max30102 to take 100 samples/sec of
+        each the IR and red led reflected energy. This data is packaged,
+        filtered and forwarded to client. Heart rate and Oxygen concentration 
+        are also calulated and displayed.
+       </p> 
       </figure>
       </div>
 
