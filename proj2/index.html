@@ -13,20 +13,56 @@
    </head>
    <body>
 
-   <h1>Heart Rate Monitor - Site under construnction</h1>
+   <h1> ESP32 control and monitor MAX30102 from a browser</h1>
    <div id="intro">
       <img src="./hr.png" style="width:40%">
       <p> 
-      <ul><li></li>
-          <li></li>
+      This project collects data from a max30100 heart rate monitor device and presents a webpage 
+      to a connected browser displaying the real time data as well as the dsp derived Pulse Rate
+      and Oxygen concentration results.
+
+      Hardware Required :
+      <ul>
+          <li>ESP8266 module</li>
+          <li>MAX30100 module</li>
+          <li>Four wire interdevice connections (3.3v, gnd and I2C - sda gpio18 - scl gpio18)</li>
+          <li>A computer running a browser</li>
       </ul>
       </p>
       <p>
+      This project uses the Espressif IoT Developemnt Framework to compile user application code, 
+      build the ESP code image and flash it into the ESP device. The setup is pretty easy and
+      well documented on several websites.
       </p>
       <p>
+      The ESP device establishes a wi-fi connection, then configures the max30102 to collect 
+      100 samples per second of red and IR data. It then continuously runs two tasks:
+      <img src="./espandmax.jpg" style="width:30%">
+      <ul><li> read max30102 buffer pointers and contruct a read of available sample data 
+               with I2C bus, configure data into words and load into local buffer</li>
+          <li> setup tcp server socket and listen for http request. When http request packet is 
+               received it is parsed to extract whether it is requesting a)a file, like index.html 
+               or index.css or a js file, b) a request for a data string dump or c)a POST append 
+               containing variables altered within the client browser (or a curl command)</li>
+      </ul>
       </p>
       <p>
-      </p>
+      This nets a single C program with no non-esp-idf dependencies of about 300 lines, most 
+      of which were cut and pasted from the sdk examples folder. The other coding portion 
+      of this program is an .html (about 200 lines) that is embedded in the esp read only memory 
+      at compile time (if referenced in component.mk). The .html file is via tcp to your 
+      browser when the esp's url is addressed.
+
+      The JavaScript in the .html has a couple of functions:
+      <ul>
+          <li>control of plot modes, ie run/pause, display data type raw/filtered</li>
+          <li>send GET query variable data from browser tags to esp 
+              (for things like controlling led brightness)</li>
+          <li>downloads plotly.js for handelling graph real time output display</li>
+          <li>formats data returned from esp into plotly format</li>
+          <li>performs dsp operations to bandpass filter (4 pole butterworh) raw data 
+              and extract and display heartrate and oxygen concentration measurements</li>
+      </ul>
    </div>
          
    <ul id="rside">
