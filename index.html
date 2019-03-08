@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Home page baetis-ma projects</title>
+      <style>
+        h1 { text-align:center; }
+        #intro { width:70%;margin-left:auto;margin-right:auto; }
+        #projs { float:left;height:400px;width:33%;font-size:x-small; }
+      </style>
+   </head>
+   <body>
+
+      <h1>baetis-ma projects</h1>
+      <div id="intro">
+         <p> This page and asociated repositories contain the results 
+         of several recent projects, mostly involving the ESP8266 and ESP32
+         IoT modules.  </p>
+         <p> Some of the earlier ESP8266 projects were done with lua and 
+         esplorer, and later nodemcu-tool. The most recent projects have
+         been using the ESP8266_RTOS_SDK, all of the ESP32 projects use
+         the esp-idf environment.
+         </p>
+      </div>
+
+      <div id="projs" >
+      <figure>
+        <img src="./proj1/hbfiltered.png" style="width:100%">
+        <figcaption>
+           <a href="./proj1/index.html">esp32 heartrate monitor</a>
+        </figcaption>
+        <p>An ESP32's i2c bus is hooked up to a max30102 heartrate monitor
+        (4 wires - 3.3v, gnd, sda and scl). The esp is programmed to setup wifi
+        connection, init max device and buffer it's sample collection, setup
+        tcp connection to serve webpage or dump data in response to http
+        requests from webpage. 
+        </p> 
+      </figure>
+      </div>
+
+      <div id="projs" >
+      <figure>
+        <img src="./proj1/hbfiltered.png" style="width:100%">
+        <figcaption>
+           <a href="./proj2/index.html">esp32 simple website</a>
+        </figcaption>
+        <p>An ESP32 is programmed to serve up a simple website
+        </p> 
+      </figure>
+      </div>
+
+   </body>
+</html>
