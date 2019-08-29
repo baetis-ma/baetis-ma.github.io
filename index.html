@@ -5,8 +5,8 @@
       <style>
         h1 {color:Brown; text-align:center; }
         p {color:SaddleBrown;}
-        #intro { width:70%;margin-left:auto;margin-right:auto; }
-        #projs { float:left;height:400px;width:33%;font-size:x-small; }
+        #intro { width:80%;margin-left:auto;margin-right:auto;font-size:small }
+        #projs { float:left;width:33%;font-size:12px; }
       </style>
    </head>
    <body>
@@ -25,14 +25,16 @@
 
       <div id="projs" >
       <figure>
-        <img src="./proj1/helloworld.png" style="width:100%;height:300px">
+        <img src="./proj1/helloworld.png" style="width:150px;height:150px">
         <figcaption>
            <a href="./proj1/index.html">esp32 simple website</a>
         </figcaption>
         <p>ESP32 serving up a simple webpage. The code in the 
         repository also verified
         working with ESP8266_RTOS_SDK environment for esp8266. 
-        Includes framework for sharinf data between client an server.
+        Includes framework for sharing two way data communication 
+        between browser (buttons/text fields) and esp tcp server
+        (collected data from perifierals).
         Basic directions for setting up build indluded.
         </p> 
       </figure>
@@ -40,7 +42,7 @@
 
       <div id="projs" >
       <figure>
-        <img src="./proj2/hr.png" style="width:100%;height:300px">
+        <img src="./proj2/hr.png" style="width:150px;height:150px">
         <figcaption>
            <a href="./proj2/index.html">esp32 heartrate monitor</a>
         </figcaption>
@@ -48,24 +50,24 @@
         ESP32 serving up a webpage with live update of MAX30102 sample
         data. The esp32 initializes max30102 to take 100 samples/sec of
         each the IR and red led reflected energy. This data is packaged,
-        filtered and forwarded to client. Heart rate and Oxygen concentration 
-        are also calulated and displayed.
+        filtered and forwarded to client browser. Heart rate and Oxygen concentration 
+        are calulated and raw data displayed.
        </p> 
       </figure>
       </div>
 
       <div id="projs" >
       <figure>
-        <img src="./proj5/dht.png" style="width:100%;height:300px">
+        <img src="./proj5/dht.png" style="width:150px;height:150px">
         <figcaption>
            <a href="./proj5/index.html">dht home network</a>
         </figcaption>
         <p>
-        An early ESP8266 project using nodeMCU and the lua language.
+        One of my earlier ESP8266 projects using nodeMCU and the lua language.
         A number of remote esp8266 and DHT-11 combos broadcast json encapsulated
-        temperature and humidity data to udp sockets about once per second.  The base station
-        serves the webpage, collects the udp packets and combines them for tsp transmission to
-        the browser.
+        temperature and humidity data to udp sockets about once per second.  
+        The base station serves the webpage, collects the udp packets and combines 
+        them via tcp server for presentation the browser.
         </p> 
       </figure>
       </div>
