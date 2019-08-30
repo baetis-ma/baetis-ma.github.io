@@ -4,64 +4,41 @@
       <title>DHT Home Network</title>
       <style>
         h1 { text-align:center; }
-        #intro { float:right;width:75%;margin-left:50px;margin-right:100px; 
-                 font-size:large; }
-        img { float:right;padding:15px;padding-right:40px;}
-        #rside { position:absolute;top:20%; }
+        p {color:SaddleBrown;}
+        img { position:absolute;top:20%;left:40%;  }
+        #intro { float:right;width:85%;margin-left:50px;margin-right:50px;
+                 position:absolute;top:66%; font-size:small; }
+        #rside { position:absolute;top:100px;font-size:x-small; }
 
       </style>
    </head>
    <body>
 
    <h1>DHT Home Network</h1>
-   <div id="intro">
       <img src="./dht.png" style="width:40%">
+   <div id="intro">
       <p>       
       This was my first ESP8266 project using nodeMCU and the lua language
       along withESPlorer or nodemcu-tools to download and run the lua files.
       DHT Home network collects the data from a number of remote esp8266
       connected to DHT-11 temperature and humidity sensors that are 
-      broadcastinf json data packets to udp sockets. The base station
+      broadcasting json data packets to udp sockets. The base station
       collects the udp packets and conbines them for tsp transmission to
       the browser.
-      </p>
-      <p> 
-      This repository was prerelease tested on a ESP32-S with the current version of the esp-idf 
-      design environment and on a ESP8266 D1-mini module the current version of the ESP8266_RTOS_SDK
-      environment.
-      The tcp socket in the esp handles four HTTP request headers :
-      <ul><li>No url path reults in index.html file on esp being broken up 
-              and forwared to browser</li>
-          <li>url path 'index.html' reults in index.html file on esp being broken up 
-              and forwared to browser</li>
-          <li>url path 'getData' reults in function call to GetData() in esp-website.c, queries are
-              also forwarded to function for parsing.</li>
-      </ul>
-      </p>
-      <p>Any files you want down loaded will require editting the tcp_server_tasks() function and
-      adding the file to main/component.mk file. In the code just copy the code block responding to
-      index.html and replace the codition staement and the asm tag name ptrs.</p>
-      </p>
-      <p>
-      The GetData() function provides a simple way to transfer information between the browser and the
-      esp server. Data transfered from the browser can include state of buttons, or data from text
-      fields. A javascript function running in a 200ms setInterval loop can transfer user settings
-      and listen for a packet containing updated measuremnt data from the esp32 and it's periferals.
-      </p>
-      <p>
-      This project is not very useful in itself but can be used for a framework for more complicated 
-      projects.
       </p>
    </div>
          
    <ul id="rside">
       <a href="https://baetis-ma.github.io/index.html">baetis-ma HOME</a>
-      <li> <p>This  repository</p>
-          <a href="https://github.com/baetis-ma/esp32-idf-website">esp32-idf-website</a>
-      <li> <p> My repositories</p>
-          <a href="https://github.com/baetis-ma">github.com/baetis-ma</a></li>
-      <li> <p> My e-mail<p>
-          <a href="mailto:markwarren.ee@gmail.com">email</a></li>
-   </ul> 
+      <br> - github home page <br>
+      <a href="https://github.com/baetis-ma/esp8266-dht-homenetwork">
+                     esp8266-dht-homenetwork</a>
+      <br> - project repository for this project <br>
+      <a href="https://github.com/baetis-ma">github.com/baetis-ma</a>
+      <br> - github projects repositories <br>
+      <a href="mailto:markwarren.ee@gmail.com">email</a>
+      <br> - my e-mail <br>
+   </ul>
    </body>
 </html>
+            
