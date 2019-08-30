@@ -6,89 +6,126 @@
         h1 {color:Brown; text-align:center; }
         p {color:SaddleBrown;}
         li {color:Maroon; }
-        #intro { float:right;width:70%;margin-left:50px;margin-right:100px; 
-                font-size:large; }
-        img { float:right;padding:15px;padding-right:40px;}
         video { float:right;padding:15px;padding-right:40px;}
-        #rside { position:absolute;top:20%; }
+        #intro { float:right;width:85%;margin-left:50px;margin-right:50px;
+                 position:absolute;top:75%; font-size:small; }
+        #rside { position:absolute;top:30%;font-size:x-small; }
       </style>
    </head>
    <body>
 
    <h1> ESP32 control and monitor MAX30102 from a browser</h1>
+   <img src="./hr.png" style="width:55%;height:45%;position:absolute;top:25%;left:40%;">
    <div id="intro">
-      <img src="./hr.png" style="width:40%">
       <p> 
-      This project collects data from a max30100 heart rate monitor device and presents a webpage 
-      to a connected browser displaying the real time data as well as the dsp derived Pulse Rate
-      and Oxygen concentration results.
+      This project collects data from a max30102 heart rate monitor device and presents 
+      a webpage to a connected browser displaying the real time data as well as the dsp
+      derived Pulse Rate and Oxygen concentration results.
 
       Hardware Required :
       <ul>
-          <li>ESP8266 module</li>
-          <li>MAX30100 module</li>
-          <li>Four wire interdevice connections (3.3v, gnd and I2C - sda gpio18 - scl gpio18)</li>
-          <li>A computer running a browser</li>
+          <li> ESP32-S module (~$5 ebay)</li>
+          <li> MAX30102 module (~$2 ebay)</li>
+          <li> Four wires - interdevice connections 
+              <ul><li> 3.3v</li><li> gnd </li>
+              <li> I2C sda on gpio19</li>
+              <li> I2C scl on gpio18</li></ul>
+          <li> A computer running a browser and esp-idf tools </li>
+          <li> USB cable </li>
       </ul>
       </p>
       <p>
-      This project uses the Espressif IoT Developemnt Framework to compile user application code, 
-      build the ESP code image and flash it into the ESP device. The setup is pretty easy and
-      well documented on several websites.
+      <img src="./espandmax.jpg" style="float:right;width:40%">
+      This project uses Espressif IoT Developemnt Framework (esp-idf) to compile user 
+      application code, build the ESP code image and flash it into the ESP device. 
+      The setup is pretty easy and well documented on several websites (see 
+      esp-idf-webpage project for a walk through).
       </p>
       <p>
-      The ESP device establishes a wi-fi connection, then configures the max30102 to collect 
-      100 samples per second of red and IR data. It then continuously runs two tasks:
-      <img src="./espandmax.jpg" style="width:30%">
-      <ul><li> read max30102 buffer pointers and contruct a read of available sample data 
-               with I2C bus, configure data into words and load into local buffer</li>
-          <li> setup tcp server socket and listen for http request. When http request packet is 
-               received it is parsed to extract whether it is requesting a)a file, like index.html 
-               or index.css or a js file, b) a request for a data string dump or c)a POST append 
-               containing variables altered within the client browser (or a curl command)</li>
-      </ul>
+      The ESP device establishes a wi-fi connection, then configures the max30102 
+      to collect 100 samples per second of red and IR data. It then initiates 
+      two tasks:
+      <p> adc_task() - a loop that
+      <ul> <li> adjusts ir and red led power if changed on web page</li>
+           <li> i2c read the max30102 measurement data buffer pointers</li>
+           <li> determine if data is present </li>
+           <li> construct a read of available sample data with I2C bus</li>
+           <li> configure data into words and load into local buffer</li></ul>
+      <p> tcp_server_task() - tcp socket listening for http request from wifi
+      <ul> <li> receive tcp server socket http request</li>
+           <li> parse http request into following three types</li>
+           <ul><li> file download (ex. index.html, image, .css or a .js file) </li>
+            <ul><li> if the beginning of the payload contains either "index.html" or
+                     "" then the contents of the file index.html are forwarded to
+                     browser from esp read only memory space</li>
+                <li> this program could be easily modified to handle other files </li>
+                <li> files included in main/components.mk are tranferred to esp rom
+                     at build time, start and stop pointer are available to C 
+                     program </li></ul>
+                <li> request for a data string dump</li>
+            <ul><li> the JavaScript in index.html sends an HTTP request header of
+            <br><font size="1">
+                    GET /getData?irpower=100&xrpower=180&raworbp=0&startstop=0 </font> 
+                    <br>every 0.5 seconds </li>
+                <li> The parser updates the esp code global values of irpower, rpower, 
+                     raworbp and startstop from the webpage</li>
+                <li> raw data is filtered by a two pole butterworth dsp operation</li>
+                <li> a comma delimited outstr[] is conctructed with the number of samples
+                     available, the average IR value, the average red value followed
+                     by alternating red and IR instantaneous values and sent to
+                     the JavaScript for display update. The data sent depends on the state
+                     of the raworbp flag.</li>
+                <li> the data pointer for the adc_task() data logging is reset </li></ul>
+               <li> none of the above sends a 404 page</li>
+      </ul></li> </ul></ul>
       </p>
       <p>
-      This nets a single C program with no non-esp-idf dependencies of about 300 lines, most 
-      of which were cut and pasted from the sdk examples folder. The other coding portion 
-      of this program is an .html (about 200 lines) that is embedded in the esp read only memory 
-      at compile time (if referenced in component.mk). The .html file is via tcp to your 
-      browser when the esp's url is addressed.
+      This nets C source code with no non-esp-idf dependencies of a couple hundred 
+      lines, most of which were cut and pasted from the sdk examples folder. 
+      The other coding portion of this program is an .html file including a
+      javascript portion (about 200 lines) 
+      that is embedded in the esp read only memory at compile time (if referenced 
+      in component.mk). The .html file is transfered via tcp to your browser when the 
+      esp's url is addressed.
       </p>
       <p>
       The JavaScript in the .html has a couple of functions:
       <ul>
-          <li>control of plot modes, ie run/pause, display data type raw/filtered</li>
-          <li>send GET query variable data from browser tags to esp 
-              (for things like controlling led brightness)</li>
+          <li> control of plot modes, ie run/pause, display data type 
+          raw/filtered.</li>
+          <li> send GET query variable data from browser tags to esp 
+              (for things like controlling led brightness).</li>
           <video  width="50%" height="50%" controls>
              <source src="./hr.mp4" type="video/mp4">
           </video>
-          <li>downloads plotly.js for handelling graph real time output display</li>
-          <li>formats data returned from esp into plotly format</li>
-          <li>performs dsp operations to bandpass filter (4 pole butterworh) raw data 
-              and extract and display heartrate and oxygen concentration measurements</li>
+          <li> downloads plotly.js for handeling graph real time output 
+          display.</li>
+          <li> formats data returned from esp into plotly format</li>
+          <li> calculates and displays heartrate and oxygen concentration 
+               measurements.</li>
       </ul>
       </p>
       <p>
-      The video starts out with no finger on the max30102 so it just shows noise. When it finger
-      is placed on the module there is a big spike in the graph due to the samples shotting up to 
-      almost fullscale, the IIR filter takes a little while to filter out the dc,
-      the dc autoranges out, and the heart
-      beats show up pretty clearly. The intensity of red and ir diodes can be changed, the
-      updating can be halted and the unfiltered data can be displayed. 
+      The video starts out with no finger on the max30102 so it just shows noise. 
+      When a finger is placed on the module there is a big spike in the graph due 
+      to the reflected light going to almost fullscale, the IIR filter takes a little 
+      while to filter out the dc, the dc autoranges out, and the heart
+      beats show up pretty clearly. The intensity of red and ir diodes can be 
+      changed, the updating can be halted and the unfiltered data can be displayed. 
       The heart rate and SpO2 concentrations are calculated and displayed.
       </p>
    </div>
          
    <ul id="rside">
       <a href="https://baetis-ma.github.io/index.html">baetis-ma HOME</a>
-      <li> <p>This  repository</p>
-          <a href="https://github.com/baetis-ma/esp32-max30102-website">esp32-idf-website</a>
-      <li> <p> My repositories</p>
-          <a href="https://github.com/baetis-ma">github.com/baetis-ma</a></li>
-      <li> <p> My e-mail<p>
-          <a href="mailto:markwarren.ee@gmail.com">email</a></li>
-   </ul> 
+      <br> - github home page <br>
+      <a href="https://github.com/baetis-ma/esp32-max30102-website">
+               esp32-max30102-website</a>
+      <br> - github repository for this project <br>
+      <a href="https://github.com/baetis-ma">github.com/baetis-ma</a>
+      <br> - github projects repositories <br>
+      <a href="mailto:markwarren.ee@gmail.com">email</a>
+      <br> - my e-mail <br>
+   </ul>
    </body>
 </html>
