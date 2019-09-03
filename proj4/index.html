@@ -63,7 +63,7 @@
          few feet away I would imagine.
       <p>The device is surprisingly 
          accurate after rotating the device through several axis (at
-         least five and pretty evenly spaced). iI have not tried
+         least five and pretty evenly spaced). I have not tried
          storing calibration values to see how they would track
          over time but go through the calibration dance after each powerup.
          After pointing the modules x-axis at north I noticed I was off by 
@@ -71,6 +71,16 @@
          out a NOAA Magnetic Field Calculator and discovered my location
          has a -14 degree 6 minute declination ans a 67 degree 0 minute
          inclination, that explains that.
+       <p>More observations -
+         The first time I tested this device it was attached to
+         the ESP32 with some pretty long jumper wires. Installing 
+         the module on a solderless prototype board changed the 
+         calibration values and even mixed up the magnetic field axis,
+         probably making calibrating out the affect impossible.
+         So note in presence of any close-by ferrous metals or 
+         magnetic materials (or current?) the earth's magnetic field 
+         is complicated and axis misshape. However, the free standing 
+         module seems to hold calibration over a few days so far.
 
    </div>
          
