@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <title>DHT Home Network</title>
+      <title>Magnetometer Demonstration</title>
       <style>
         h1 { text-align:center; }
         p {color:SaddleBrown;}
+        li {color:SaddleBrown;}
         img { position:absolute;top:20%;left:40%;  }
         #intro { float:right;width:85%;margin-left:50px;margin-right:50px;
                  position:absolute;top:66%; font-size:small; }
@@ -14,21 +15,63 @@
    </head>
    <body>
 
-   <h1>DHT Home Network</h1>
+   <h1>Magnetometer Demonstration</h1>
       <img src="./hcm5883ss.png" style="width:40%">
    <div id="intro">
-      <p>       
-              This is an esp-idf project with a ESP32S and an HMC5883L I2C magnetometer
-        module (was about a buck on eBay). The webpage updates every 300msec and
-        has a list of measured
-        parameters, an image of the actual orientation of the magnetometer (when
-        the module is upside down the bottom shows), a graph of the x, y and z
-        axis flux, a graph of the extracted spherical coordinates theta (tilt) and phi
-        (level rotation) and a 3D plot of the flux vector.
-        The device is surprisingly accurate after rotating the device through several
-        axis.
+      <p>This is an esp-idf project with a ESP32S and an HMC5883L I2C magnetometer
+         module. The webpage updates every 300msec and has several page 
+         divs described below
+         <ul><li> a list of calculated parameters so you can monitor the
+                  calibration progress and check the cartesian to spherical
+                  conversion. The 'normalized' x, y and z measurements are 
+                  converted to spherical coordinates with these equations
+                  <ul><li> magnitude = Math.sqrt(x*x + y*y + z*z)
+                      <li> theta = Math.acos ( z / magnitude)
+                      <li> phi = Math.acos ( x / Math.sqrt(x*x + y*y))
+                  </ul>
+                  The magnitude comes out very close to 1 after calibration
+                  and represents the total magnetic field. theta is how much
+                  that vector is rotates from straight up and phi is how 
+                  much the vertor is rotated on the x-y plane from the positive
+                  x axis. 
+             <li> an image of the actual orientation of the magnetometer. As
+                  the screen updates several time per second the image of
+                  the module is presented with a css transform with the
+                  calculated theta and phi values with the following javaScript
+                  command
+                  <ul><font size="1" color="darkgray">document.getElementById
+                     ("myMod").style.transform = "rotateX("+theta+"deg)
+                     rotateZ("+phi+"deg)";</font></ul>
+                  When the theta measurement is between 90-270 degrees a
+                  bottom side image of the module is displayed instead to the
+                  top.
+             <li> a plotly graph of the x, y and z axis flux is displayed on 
+                  top graph.
+             <li> and a graph of the extracted spherical coordinates theta 
+                  (tilt) and phi (xy axis rotation) is diectly underneath.
+             <li> a plotly 3D plot of the flux vector is on the lower left
+                  of the screen. While the screen is updating you cant
+                  work the responsive controls so a stop 3d plot update button
+                  is available.
+         </ul>
+      <p>When the device was being read at about 50 xyz measurements
+         per second the magnetometer was getting seriously hot. At 10
+         sample sets per second the device is noticably cooler but still
+         pretty warm. Pieces of metal and (especially) magnets within a
+         foot or so affect measurements. The device could be used to 
+         track the position and orientation of a strong magnet up to a
+         few feet away I would imagine.
+      <p>The device is surprisingly 
+         accurate after rotating the device through several axis (at
+         least five and pretty evenly spaced). iI have not tried
+         storing calibration values to see how they would track
+         over time but go through the calibration dance after each powerup.
+         After pointing the modules x-axis at north I noticed I was off by 
+         about 15 degrees and I wasn't getting 180 on my theta. I checked 
+         out a NOAA Magnetic Field Calculator and discovered my location
+         has a -14 degree 6 minute declination ans a 67 degree 0 minute
+         inclination, that explains that.
 
-      </p>
    </div>
          
    <ul id="rside">
