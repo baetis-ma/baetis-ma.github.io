@@ -23,6 +23,70 @@
          a udp socket on each of the remore esp8266s. The esp32 base station collects
          the packet data from the five remote stations and updates the ssd1306 display
          as well as fowarding the data to google sheets for archeiving and display.
+      <p>The remote sensors are all esp8266 based and of several different module type
+         (lolin, wemos, miniD1 and esp-01) running basically the same program but with different
+         build enviroments. Several of the remote sensor modules were built using the 
+         esp-idf, but, I had trouble getting the DHT-11's to work with the esp-idf
+         so I fell back to the nodemcu lua environment (which just works at what it does) 
+         with several
+         of the remote sensors. I like the nodemcu-tool command with the lua programming.
+      <p>The function of the remote sensors is to aquire and report data. To that end
+         each of the units is running a two second loop that reads the attached DHT
+         device to obtain 16 bit temperature and humidity data which are encapsulated
+         in a string along with the remote units identifing name, for example:
+         "station3,205,540". The loop then sets up a wifi connection to router and a
+         udp socket at port 5000 and IP address 192.168.0.255 and sends the string. 
+         All the devices on my lan have the address 192.168.0.xxx (TP-Link router),
+         it is important that the address contains the subnet address of yout lan.
+         The last byte of 255 is a broadcast setting that should be received by everything
+         on my home network. UDP sockets use less resources than TCP (no checking, acknologing, etc)
+         and the reception every one of these packets is not critical, so less network
+         resources are wasted. This saves having to program (or somehow otherwise inform)
+         the base station IP to each of the remote units. So, there are five remote sensors out
+         there in stategic positions each blasting station,temperature,humidity to my router
+         every two seconds, next a description of the base station functionality.
+      <p>The base station will collect and report our data. Data is collected from two locations,
+         the base station's local DHT-22 and a udp socket listening for traffic with it's port
+         and IP address (or .255). First we establish connection to wifi router and are assigned 
+         an IP address. There are two main tasks looping in the base station : udp_server_task 
+         and https_request_task.
+      <p>udp_server_task sets up a udp socket listening for any network traffic at port 5000
+         and at it's IP address (or local network byte = 255). When listen is satisfied it reads
+         the receive buffer and closes the socket. The string is parsed, the data is crunched and 
+         the global data array is updated. This loop also updates the ssd1306 oled display with
+         the current data.
+      <p>https_request_task runs in a loop that is programmed by the request_rate integer (seconds).
+         The socket performs an https request at to url accessable web application ata web address  
+         <font color="red">
+         <br>https://script.google.com. <br>
+         </font>
+         The name of the web app assigned when this sheet was created is 
+         <font color="red">
+         <br>https://script.google.com/macros/s/AKfycbxVs4M6l3cd7ykBfJrtif03BhVFoPmCY1yYutIf/exec
+         </font>
+         <br>This is the address of a web app that was created when I created a google sheets spreadsheet
+         and deployed it, a good description of this process is
+         <a href="https://wp.josh.com/2014/06/04/using-google-spreadsheets-for-logging-sensor-data/">
+         here</a>. This is the base web url that is used to add data to the spread sheet, to add data to
+         the spreadsheet, data is appended to the base url - for example appending <font color="red">
+         "?Time=12&T1=23&H1=67"</font>
+         to the base url will add a new row under the Time, T1 and H1 data columns in the spreadsheet
+         in your google account that you setup in very close to real time. When the
+         udp_server_task collected new data and wote the oled display, described above, another thing that i
+         it did was keep this
+         web_url string updated for use whenever the https_request_task runs. https_request_task
+         sets up a connection to the web address, when that connection is made it takes this 
+         web_url string and embeds it in a request string which it transmits, google responds with html
+         telling you that data update received.
+      <p>Part of the making connection to web the address described above is not entirely straight forward
+         with secure http requests. The handshaking requires that a pem security certificate be
+         transmitted (noticed that it takes about 1.5 seconds for connection). This is handled by the
+         esp-idf framework but requires that you download and embed a main/server_root_cert.pem file
+         for each IP address. I think that the .pem file included in this project will work across the
+         https://script.google.com address, if not directions can be found in the components/https_request.h
+         file in the project to make a compatible file.  
+         
+     
    </div>
          
    <ul id="rside">
