@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>DHT Home Network</title>
+      <style>
+        h1 { text-align:center; }
+        p {color:SaddleBrown;}
+        img { position:absolute;top:20%;left:40%;  }
+        #intro { float:right;width:85%;margin-left:50px;margin-right:50px;
+                 position:absolute;top:72%; font-size:small; }
+        #rside { position:absolute;top:100px;font-size:x-small; }
+
+      </style>
+   </head>
+   <body>
+
+   <h1>DHT Home Network</h1>
+      <img src="./dht_home_sheet.png" style="width:35%;">
+   <div id="intro">
+      <p>This is an esp-idf project with an ESP32S, five esp8266 modules of various 
+         types, six DHT-11 or 22 modules and an SSD1306 128x64 oled display. Temperature
+         and Humity measumrents are taken about every two seconds and broadcast from
+         a udp socket on each of the remore esp8266s. The esp32 base station collects
+         the packet data from the five remote stations and updates the ssd1306 display
+         as well as fowarding the data to google sheets for archeiving and display.
+   </div>
+         
+   <ul id="rside">
+      <a href="https://baetis-ma.github.io/index.html">baetis-ma HOME</a>
+      <br> - github home page <br>
+      <a href="https://github.com/baetis-ma/home_dhts"> home dht network</a>
+      <br> - project repository for this project <br>
+      <a href="https://github.com/baetis-ma">github.com/baetis-ma</a>
+      <br> - github projects repositories <br>
+      <a href="mailto:markwarren.ee@gmail.com">email</a>
+      <br> - my e-mail <br>
+   </ul>
+   </body>
+</html>
+            
