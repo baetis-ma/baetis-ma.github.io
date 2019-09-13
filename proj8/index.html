@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>DHT Home Network</title>
+      <style>
+        h1 { text-align:center; }
+        p {color:SaddleBrown;}
+        img { position:absolute;top:20%;left:40%;  }
+        #intro { float:right;width:85%;margin-left:50px;margin-right:50px;
+                 position:absolute;top:85%; font-size:small; }
+        #rside { position:absolute;top:100px;font-size:x-small; }
+
+      </style>
+   </head>
+   <body>
+
+   <h1>OLED Display with ADC and Microphone</h1>
+      <img src="./combined.jpg" style="width:35%;">
+   <div id="intro">
+      <p>This is an esp-idf project with an ESP32S, a pcf8591 adc, a max9814 microphone and 
+         an SSD1306 128x64 oled display. The project is in two parts, the first shows the
+         waveform of sound picked up by the micophone and the seocond shows the frequency.
+      <p>The first of the waveforms shown above is of my daughter whisteling at about
+         1.2KHz, the samples are taken ar about a 10K sample per second rate (the i2c
+         clock is programmed at 100KHz) with 128 samples shown across the display. The
+         spectrum below it is her making approximately the same whistle while running
+         basically the same program but passing the result through an fft. Any FFT sample
+         size over 64 samples crashed my ESP32. Notice the nice pure tone on the spectrum
+         display - right around where you would expect 1KHz to be, the lower bar is the
+         1.25v dc bias expected from our module. The other waveform 
+         display output is of Montana whisteling at about 500Hz.
+      <p>I tried testing some test tones from youtube videos through my computer's
+         speakers and got absolutely aweful results. I have not diagnosed the source of
+         these errors yet as my signal source requirement was by the occupant of the
+         adjacent desk. The waveform display of the signals looks reasonable but the
+         resulting spectrum display hardly showed a maxima. 
+      
+     
+   </div>
+         
+   <ul id="rside">
+      <a href="https://baetis-ma.github.io/index.html">baetis-ma HOME</a>
+      <br> - github home page <br>
+      <a href="https://github.com/baetis-ma/home_dhts">not commited yet</a>
+      <br> - project repository for this project <br>
+      <a href="https://github.com/baetis-ma">github.com/baetis-ma</a>
+      <br> - github projects repositories <br>
+      <a href="mailto:markwarren.ee@gmail.com">email</a>
+      <br> - my e-mail <br>
+   </ul>
+   </body>
+</html>
+            
