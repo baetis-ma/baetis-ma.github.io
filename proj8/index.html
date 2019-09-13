@@ -23,8 +23,12 @@
       <p>The max9814 moudule has a microphone and an agc. The output has a 1.25v bias and
          a 2.0 volt peak to peak signal. This analog output goes to the pcf8591 adc where
          128 byte burst reads are done in a while loop (the ssd1306 oled display has 128
-         columns). The oled display frame buffer is written and the loop starts over again.
-         The display updates several times per second with little flicker.
+         columns). The i2c clock is set at 100KHz which is a burst sample rate of about
+         10Ksamples/sec and a full sample interval of 12.8msec, this is about the fastest
+         the pcf8591 specification recomments running the part (although you can probably
+         get 15-30% more - didn't try it). The oled display frame buffer is written and 
+         the loop starts over again. The display updates several times per second with i
+         little flicker.
       <p>The first of the waveforms shown above is of my daughter whisteling at about
          1.2KHz, the samples are taken ar about a 10K sample per second rate (the i2c
          clock is programmed at 100KHz) with 128 samples shown across the display. The
