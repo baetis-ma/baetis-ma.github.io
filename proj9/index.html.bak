@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>F450 Drone Build with ESP</title>
+      <style>
+        h1 { text-align:center; }
+        p {color:SaddleBrown;}
+        img { position:absolute;top:20%;left:40%;  }
+        #intro { float:right;width:85%;margin-left:50px;margin-right:50px;
+                 position:absolute;top:72%; font-size:small; }
+        #rside { position:absolute;top:100px;font-size:x-small; }
+
+      </style>
+   </head>
+   <body>
+
+   <h1>F450 Drone</h1>
+      <img src="./dht_home_sheet.png" style="width:35%;">
+   <div id="intro">
+      <p>This is an esp-idf project with an ESP32 acting as a flight controller and receiver
+         for F450 quadcoptor drone and an esp8266 D1 mini as radio control transmitter.
+      <p>I did a project recently with an mcp6050 gyroscope and accelerometer, impressed with
+         the capabilities and ability to keep a reasonable integral of inexpensive mems
+         sensors I deceided to find something to control. Some ebay searches pretty quickly
+         lead me to consider building a quad coptor. I soon found a kit containing f450 
+         frame, brushless motors, electronic speed controllers
+         and props for a little over $50. They even threw in a CC3D flight controller module,
+         which not part of the original plan helped firm up a development strategy. My plan
+         is to develop stable platform that will hover (and return) to one spot before tring
+         to focus on 'flight' concerns.
+      <p>I've been hobbying around with esp devices for a few months now and have deceided to
+         use an esp8266 D1 mini as my tranmitter base station and an esp32 as my receiver and
+         flight controller. At first the flight controller aspects will be shared with the
+         CC3D flight controller that I got with my kit package. I hope to integrate the CC3D
+         functionality into the esp32 as we go along, but there is a lot of learning to do 
+         here that I can reverse engineer with the CC3D and cleanflight.
+      <p>Tramsmitter requirements : 
+         <ul><li> Two way comms to at least 200 feet
+             <li> be able to sustain packet rate of at least 10/sec (hopefully 50/sec)
+             <li> collect data from a couple joysticks, switches and a display
+             <li> return blackbox data from flight controller at packet rate to serial port
+         </ul>
+      <p>Using a webpage as input and a TCP connection between transmitter did not work out,
+         I have familiarity with the IP and was able to test it out in a few hours. Packets
+         started getting backed up at a 300msec launch rate, maybe this could be improved but
+         probably not by a order of magnitude. A couple of browser joysticks on a cell phone
+         might have been nice. The project is now heading in a transmitter to flight
+         controller receiver interface using espnow framed wi-fi station/ap connectivity and
+         i2c interface to ground station hardware (physical joysticks, switches and display).
+         Tests showed a 3x range improvement over my router without the connection and 
+         tethering hassels, and much much better packet rates. The espnow protocol is
+         directly between the esp devices to their mac addresses with crc checks and limited
+         handshaking.
+         <br>The joysticks being, temporarily, used are pretty horrible. They have a huge
+         dead spot at the center where the output resistance doesn't change for about 15
+         degrees each side of center and the rest of the range is used up well before coming 
+         to limit of travel, so the whole useable range is about 15-40 degrees each side
+         of center. The joysticks center position resistance varies considerably and needs
+         to be calibrated and they return to center.
+         <br>A data acquire task loop is run in the transmitter to read voltage values from
+         an ads1015 every 20msec. The readings are used to update local values for throttle,
+         yaw, pitch and roll. The yaw, pitch and roll are 10bit values coming from the adc,
+         the center rest position value is subtracted, the result adjusted by a chosen gain
+         and added or subtacted (depending on orientation of joystick) to 1500. The throttle
+         does not return to center so its reading (after calibration offset) is accumulated 
+         (and multiplied by chosen gain) and added to 1000.
+         <br>Events are schedualled to run espnow_send every 20msec and a callback for
+         espnow packets received. The espnow_send transmits a string containg the throttle,
+         yaw, pitch, yaw and other parameters. The callback string received from the 
+         flight controller contains telemetery (blackbox) data which is forwared to the 
+         console serial port for collection by attached pc for analysis.
+      <p>Flight Controller and receiver requirements :
+         <ul><li> Acquire gyro/accel data and tranmitter inputs to control motor speeds
+             <li> Return telemetry data to transmitter ground station
+         </ul>         
+      <p>The current goal of the project is use the CC3D flight controller with an
+         esp32 receiver interface. The CC3D has a nice interface to simulators such as
+         cleanflight that allow easy setup of ESPs, mems and motor calibration, pids and
+         filtering and telemtry data collection as long as connected (these features will
+         help get started a lot quicker and provide a great debug assistance). The esp32
+         receiver will need to talk to the CC3D flight controller to supply transmitter data
+         and to obtain telemtery data and write pid, filter and status registers.
+         <br>When the CC3D flight controller is attached to cleanflight and you snoop on the 
+         port with an intermediary (interceppty worked for me - or using three usb dongels)
+         you can see binary data being transferred which turns out to be MultuWii Serial
+         Protocol(MSP), full documentation is hard to find but can be peiced together and checked
+         against snoop data to come up with a good mcp.h file. The actual motor control
+         path parameters (throttle, yaw, pitch, roll, motor speeds) all seem to be blocked
+         read only at least with my version of CC3D (the version didn't work with later 
+         versions of software so I used cleanflight to download firmware backwards until
+         the CC3D booted up). I have gotten one of the CC3D serial ports hooked up to
+         my esp32 to read mcp paramters from the CC3D, and even to negociate an esp32
+         hookup directly to cleanflight.
+         <br>The motor control path variable can not be written with MSP with my version of
+         CC3D and I do not want to use servo pulses to import my throttle, yaw, etc..
+         values to the flight controller. Deceided to use the SBUS semi-digital protocol
+         for this purpose, my version of CC3D also does not support the sbus_invert cli
+         command so an inverter had to be built from a 2N2222 and two resitors. To help
+         bebug the development of the SBUS interface I wrote a C programs on my desktop to
+         write SBUS protocol packets for 16+2 channels and another to monitor and decode
+         SBUS packets. The esp32 program has demonstrated SBUS packet transmission to the
+         CC3D flight controller as monitored by the cleanflight transmitter tab and flight
+         simulator. 
+      <p>So, at this point, I can have my CC3D flight controller on my desk hooked up to my
+         desktop and walk 150 feet down the street with my ground station sending throttle,
+         yaw, pitch and roll information. Still need to verify that the other CC3D port can
+         also be used so that the esp32 can have SBUS and MSP running at the same time with
+         the flight controller - just sending a dummy packet right now.
+      <p>My F450 drone kit has literally just arrived from it's slow trip across the pacific,
+         actually it took exactly two weeks - about half of the estimated delay (I still don't
+         have any batteries so I just ordered some 3s's from amazon - things cost 60% of what
+         the whole drone cost - find it amazing that a small battery like that can put out 
+         80Amps!). Got a lot of work to do building this thing and not make it look like a
+         kludge, but just got a new soldering iron and plan to look at some youtube F450
+         builds before smashing the thing in uncontrolled ascent to ceiling (considering 
+         various mechanical tethering options). Having the cleanflight interface for initial
+         setup will save a lot of time.
+   </div>
+         
+   <ul id="rside">
+      <a href="https://baetis-ma.github.io/index.html">baetis-ma HOME</a>
+      <br> - github home page <br>
+      <a href="https://github.com/baetis-ma/f450-drone">F450 drone repo</a>
+      <br> - project repository for this project <br>
+      <a href="https://github.com/baetis-ma">github.com/baetis-ma</a>
+      <br> - github projects repositories <br>
+      <a href="mailto:markwarren.ee@gmail.com">email</a>
+      <br> - my e-mail <br>
+   </ul>
+   </body>
+</html>
+            
