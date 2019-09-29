@@ -98,7 +98,8 @@
          values to the flight controller. Decided to use the SBUS semi-digital protocol
          for this purpose, my version of CC3D also does not support the sbus_invert cli
          command so an inverter had to be built from a 2N2222 and two resistors. To help
-         debug the development of the SBUS interface I wrote a couple C programs on my desktop to
+         debug the development of the SBUS interface I wrote a couple C programs 
+         <a href="https://github.com/baetis-ma/linux2sbus">(repository here)</a>on my desktop to
          write SBUS protocol packets for 16+2 channels and another to monitor and decode
          SBUS packets. The esp32 program has demonstrated SBUS packet transmission to the
          CC3D flight controller as monitored by the cleanflight transmitter tab and flight
@@ -118,12 +119,16 @@
          various mechanical tethering options). Having the cleanflight interface for initial
          setup will save a lot of time.
       <p>----------- Log Entry -------------
-      <p>I was getting a little bit of noise in the cleanflight transmitter tab - every few 
+      <p>Deceided to upgrade the drone side ESP device to a ESP32 module instead of the ESP8266
+         D1mini that was being used using initial espnow checkout, figure that the ESP32 leaves 
+         more room for future enhancements. Noticed I was getting a little bit of noise in the 
+         cleanflight transmitter tab - every few 
          seconds my throttle, yaw, pitch and roll values would jump around a bit even though 
          the controls on the ground station were not touched. For the sbus signal  inverter 
          I was using the 3.3v from the esp32 module. To add a 5 volt level to my system had 
          to go external because there appears to be no way to get the esp32 module or the cc3d 
-         flight controller board to source +5volts.  I added the +5v from a usb to serial dongle 
+         flight controller board to source +5volts.  I, temporarily, added the +5v from a usb i
+         to serial dongle 
          and now the sbus interface has had no errors in the half hour I observed. I include a 
          <a href = "https://drive.google.com/open?id=16zrWSgeVZqAOGRBdouZs-SjIfwVNKjcI">
          link to video </a> of the setup as it current is controlling a drone simulator on the 
@@ -165,7 +170,6 @@
       <p>As was mentioned earlier the esp8266 modules appeared to have no problem with 
          the 100,000 non-standard baud rate generation and I don't know if other esp32 
          modules are off by the same amount.
-
    </div>
          
    <ul id="rside">
