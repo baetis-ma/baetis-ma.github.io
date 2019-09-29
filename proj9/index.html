@@ -44,9 +44,11 @@
          I have familiarity with the IP and was able to test it out in a few hours. Packets
          started getting backed up at a 300msec launch rate, maybe this could be improved but
          probably not by a order of magnitude. A couple of browser joysticks on a cell phone
-         might have been nice. The project is now heading in a transmitter to flight
-         controller receiver interface using espnow framed wifi station/ap connectivity and
-         i2c interface to ground station hardware (physical joysticks, switches and display).
+         might have been nice, right now this approach seems to have limited capability but might
+         be worth revisting in the future if a low update rate control seems able to control
+         the copter. The project is now heading in a transmitter to flight
+         controller receiver interface using espnow framed wifi station/access point connectivity
+         and i2c interface to ground station hardware (physical joysticks, switches and display).
          Tests showed a 3x range improvement over my router without the connection and 
          tethering hassles, and much much better packet rates. The espnow protocol is
          directly between the esp devices to their mac addresses with crc checks and limited
@@ -62,7 +64,7 @@
          yaw, pitch and roll. The yaw, pitch and roll are 10bit values coming from the adc,
          the center rest position value is subtracted, the result adjusted by a chosen gain
          and added or subtracted (depending on orientation of joystick) to 1500. The throttle
-         does not return to center so its reading (after calibration offset) is accumulated 
+         returns to center so its reading (after calibration offset) is accumulated 
          (and multiplied by chosen gain) and added to 1000.
          <br>Events are scheduled to run espnow_send every 20msec and a callback for
          espnow packets received. The espnow_send transmits a string containing the throttle,
@@ -82,12 +84,12 @@
          and to obtain telemetry data and write pid, filter and status registers.
          <br>When the CC3D flight controller is attached to cleanflight and you snoop on the 
          port with an intermediary (interceppty worked for me - or using three usb dongles)
-         you can see binary data being transferred which turns out to be MultuWii Serial
-         Protocol(MSP), full documentation is hard to find but can be pieced together and checked
+         you can see binary data being transferred which turns out to be MultiWii Serial
+         Protocol (MSP), full documentation is hard to find but can be pieced together and checked
          against snoop data to come up with a good mcp.h file. The actual motor control
          path parameters (throttle, yaw, pitch, roll, motor speeds) all seem to be blocked
-         read only at least with my version of CC3D (the version didn't work with later 
-         versions of software so I used cleanflight to download firmware backwards until
+         read only with the MSP interface at least with my version of CC3D (the version didn't work
+         with later versions of software so I used cleanflight to download firmware backwards until
          the CC3D booted up). I have gotten one of the CC3D serial ports hooked up to
          my esp32 to read mcp parameters from the CC3D, and even to negotiate an esp32
          hookup directly to cleanflight.
@@ -96,7 +98,7 @@
          values to the flight controller. Decided to use the SBUS semi-digital protocol
          for this purpose, my version of CC3D also does not support the sbus_invert cli
          command so an inverter had to be built from a 2N2222 and two resistors. To help
-         debug the development of the SBUS interface I wrote a C programs on my desktop to
+         debug the development of the SBUS interface I wrote a couple C programs on my desktop to
          write SBUS protocol packets for 16+2 channels and another to monitor and decode
          SBUS packets. The esp32 program has demonstrated SBUS packet transmission to the
          CC3D flight controller as monitored by the cleanflight transmitter tab and flight
@@ -115,6 +117,55 @@
          builds before smashing the thing in uncontrolled ascent to ceiling (considering 
          various mechanical tethering options). Having the cleanflight interface for initial
          setup will save a lot of time.
+      <p>----------- Log Entry -------------
+      <p>I was getting a little bit of noise in the cleanflight transmitter tab - every few 
+         seconds my throttle, yaw, pitch and roll values would jump around a bit even though 
+         the controls on the ground station were not touched. For the sbus signal  inverter 
+         I was using the 3.3v from the esp32 module. To add a 5 volt level to my system had 
+         to go external because there appears to be no way to get the esp32 module or the cc3d 
+         flight controller board to source +5volts.  I added the +5v from a usb to serial dongle 
+         and now the sbus interface has had no errors in the half hour I observed. I include a 
+         <a href = "https://drive.google.com/open?id=16zrWSgeVZqAOGRBdouZs-SjIfwVNKjcI">
+         link to video </a> of the setup as it current is controlling a drone simulator on the 
+         cleanflight transmitter tab page.
+      <p>One nasty that did occur as I was writing the sbus code for the esp32 module. I had 
+         the code ported from the esp8266 to the esp32 and it looked to be just about 
+         running, I was testing it with my desktop linux sbus_monitor program and noticed 
+         that about 5% of packets were showing up bad. The esp8255 D1mini did not show 
+         any packet loss. When I plugged the sbus into the cc3d there were no received 
+         packets (and no way to find out why apparently). Went back to the sbus_monitor 
+         program to debug packet loss and discovered the following in the table shown 
+         below.
+
+      <table>
+        <tr>
+          <th>SBUS Serial Port Buad Rate ESP32 Port</th>
+	  <th>Packet Loss Percentage to sbus_monitor program</th>	
+          <th>Packet Loss to CC3D SBUS port</th>
+        </tr>
+        <tr><th>95,000 </th><th>100%</th><th>100%</th></tr>
+        <tr><th>98,000 </th><th>~10%</th><th>100%</th></tr>
+        <tr><th>100,000</th><th> ~5%</th><th>100%</th></tr>
+        <tr><th>101,000</th><th> ~1%</th><th>~~20%</th></tr>
+        <tr><th>102,000</th><th> ~0%</th><th> ~0%</th></tr>
+        <tr><th>103,000</th><th> ~1%</th><th>~~20%</th></tr>
+        <tr><th>104,000</th><th> ~5%</th><th>100%</th></tr>
+        <tr><th>105,000</th><th>~10%</th><th>100%</th></tr>
+        <tr><th>100,000</th><th>100%</th><th>100%</th></tr>
+     </table>
+	
+      <p>The esp32 module programmed with a sbus baud rate of 102,000 does not show any 
+         packet loss as far as I can see. Interestingly the cc3d sbus connection does 
+         show sbus packet confusion at 101,000 and 103,000, the port does not register 
+         any activity at 100,000 or 104,000 baud. Which is to say that the cc3d is much 
+         more sensitive to baud rate than my desktop. This problem would have been VERY 
+         complicated to debug without the linux sbus_monitor program. cleanflight doesn't 
+         seem to have much in the line of port packet monitoring or diagnostics (except 
+         for the usb port).
+      <p>As was mentioned earlier the esp8266 modules appeared to have no problem with 
+         the 100,000 non-standard baud rate generation and I don't know if other esp32 
+         modules are off by the same amount.
+
    </div>
          
    <ul id="rside">
