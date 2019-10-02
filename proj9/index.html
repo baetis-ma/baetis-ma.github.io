@@ -88,11 +88,11 @@
          Protocol (MSP), full documentation is hard to find but can be pieced together and checked
          against snoop data to come up with a good mcp.h file. The actual motor control
          path parameters (throttle, yaw, pitch, roll, motor speeds) all seem to be blocked
-         read only with the MSP interface at least with my version of CC3D (the version didn't work
+         read only with the MSP interface at least with my CC3D board (this board also didn't work
          with later versions of software so I used cleanflight to download firmware backwards until
          the CC3D booted up). I have gotten one of the CC3D serial ports hooked up to
-         my esp32 to read mcp parameters from the CC3D, and even to negotiate an esp32
-         hookup directly to cleanflight.
+         my esp8266 (which I am doing initial development with) to read mcp parameters from the 
+         CC3D, and even to negotiate an esp32 hookup directly to cleanflight.
          <br>The motor control path variable can not be written with MSP with my version of
          CC3D and I do not want to use servo pulses to import my throttle, yaw, etc..
          values to the flight controller. Decided to use the SBUS semi-digital protocol
@@ -101,14 +101,14 @@
          debug the development of the SBUS interface I wrote a couple C programs 
          <a href="https://github.com/baetis-ma/linux2sbus">(repository here)</a>on my desktop to
          write SBUS protocol packets for 16+2 channels and another to monitor and decode
-         SBUS packets. The esp32 program has demonstrated SBUS packet transmission to the
-         CC3D flight controller as monitored by the cleanflight transmitter tab and flight
-         simulator. 
+         SBUS packets. Both the esp8266 and the linux program have demonstrated SBUS packet 
+         transmission to the CC3D flight controller as monitored by the cleanflight transmitter i
+         tab and flight simulator. 
       <p>So, at this point, I can have my CC3D flight controller on my desk hooked up to my
          desktop and walk 150 feet down the street with my ground station sending throttle,
          yaw, pitch and roll information. Still need to verify that the other CC3D port can
-         also be used so that the esp32 can have SBUS and MSP running at the same time with
-         the flight controller - just sending a dummy packet right now.
+         be used so that the esp32 can have SBUS and MSP running at the same time with
+         the flight controller - just sending a dummy packet back right now.
       <p>My F450 drone kit has literally just arrived from it's slow trip across the pacific,
          actually it took exactly two weeks - about half of the estimated delay (I still don't
          have any batteries so I just ordered some 3s's from amazon - things cost 60% of what
@@ -118,18 +118,18 @@
          builds before smashing the thing in uncontrolled ascent to ceiling (considering 
          various mechanical tethering options). Having the cleanflight interface for initial
          setup will save a lot of time.
-      <p>----------- Log Entry -------------
+      <p>----------- Log Entry (09-30-19) -------------
       <p>Deceided to upgrade the drone side ESP device to a ESP32 module instead of the ESP8266
          D1mini that was being used using initial espnow checkout, figure that the ESP32 leaves 
          more room for future enhancements. Noticed I was getting a little bit of noise in the 
-         cleanflight transmitter tab - every few 
-         seconds my throttle, yaw, pitch and roll values would jump around a bit even though 
-         the controls on the ground station were not touched. For the sbus signal  inverter 
-         I was using the 3.3v from the esp32 module. To add a 5 volt level to my system had 
-         to go external because there appears to be no way to get the esp32 module or the cc3d 
-         flight controller board to source +5volts.  I, temporarily, added the +5v from a usb i
-         to serial dongle 
-         and now the sbus interface has had no errors in the half hour I observed. I include a 
+         cleanflight transmitter tab - every few seconds my throttle, yaw, pitch and roll values 
+         would jump around a bit even though the controls on the ground station were not touched. 
+         For the sbus signal  inverter I was using the 3.3v from the esp32 module. To add a 5 volt 
+         level to my system had to go external because there appears to be no way to get the esp32 
+         module or the cc3d flight controller board to source +5volts (plan to use dc-dc converter
+         to generate +5v from the 3s lipo).  I, temporarily, added the +5v from a usb to serial 
+         dongle and now the sbus interface has had no errors in the half hour I observed. 
+         I include a 
          <a href = "https://drive.google.com/open?id=16zrWSgeVZqAOGRBdouZs-SjIfwVNKjcI">
          link to video </a> of the setup as it current is controlling a drone simulator on the 
          cleanflight transmitter tab page.
@@ -141,7 +141,6 @@
          packets (and no way to find out why apparently). Went back to the sbus_monitor 
          program to debug packet loss and discovered the following in the table shown 
          below.
-
       <table>
         <tr>
           <th>SBUS Serial Port Buad Rate ESP32 Port</th>
@@ -157,8 +156,7 @@
         <tr><th>104,000</th><th> ~5%</th><th>100%</th></tr>
         <tr><th>105,000</th><th>~10%</th><th>100%</th></tr>
         <tr><th>100,000</th><th>100%</th><th>100%</th></tr>
-     </table>
-	
+      </table>
       <p>The esp32 module programmed with a sbus baud rate of 102,000 does not show any 
          packet loss as far as I can see. Interestingly the cc3d sbus connection does 
          show sbus packet confusion at 101,000 and 103,000, the port does not register 
@@ -170,6 +168,23 @@
       <p>As was mentioned earlier the esp8266 modules appeared to have no problem with 
          the 100,000 non-standard baud rate generation and I don't know if other esp32 
          modules are off by the same amount.
+      <p>Got my batteries today and plan to start build of quadcopter with my daughter within
+         the next few days.
+      <p>----------- Log Entry (10-02-19) -------------
+      <p>Managed to get rid of the SBUS inverter by switching to the second uart port (uart3
+         in clenflight) on the CC3D (labelled flexiport instead of main port). Also have uart1
+         configured as configuration/msp port at 115,200buad which I hope to use to send
+         telemerty/blackbox data down to ground station transmitter. In cleanflight it looks like
+         only one serial port can be configured serial rx at a time, when a configured both
+         uart1 and uart3 to serial rx only uart1 was active. When uart1 was configured
+         configuration/msp uart3 started working as serial rx which I configured to sbus.
+      <p>Further communications testing looking very promising two way espnow betwen rx and tx
+         and sbus to flight controller.
+      <p>Add ssd1305 display to ground station transmitter for real time display of throttle,
+         yaw, pitch and roll. I really dislike the cheap joysticks and am looking for 
+         replacement - I added the display to help me get used to the play on these controls,
+         they have to be moved a lot off center before value changes at all and then it maxes
+         out with very little further travel.
    </div>
          
    <ul id="rside">
