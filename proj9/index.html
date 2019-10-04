@@ -185,6 +185,79 @@
          replacement - I added the display to help me get used to the play on these controls,
          they have to be moved a lot off center before value changes at all and then it maxes
          out with very little further travel.
+      <p>----------- Log Entry (10-03-19) -------------
+      <p>Its time to outline data acquisition, filtering and control goals and implementation
+         stages. As a first guess this is what is being experimented with first.
+      <p>Acquisition : Gyroscope data will be stored in fifo at 1KHz rate, accelerometer data 
+         gathered at 20msec interval at which time data is processed through filtering, control
+         loop and downloaded. Other data such as magnetometer, barometer, laser range finder, 
+         gps, etc. may also be collected if new hardware is added.
+      <p>Filtering : The MPU6050 accelerometer data I am familiar with has a large high frequency
+         component that we do not want getting into our feedback control loop, we should be
+         designing toward a two pole low-pass filter with a cutoff frequency somewhere in the 
+         range of .5-2Hz. The gyroscope data will be used for the higher frequency flight 
+         adjustments, the lower frequency drift component may need to be filtered out. It may
+         turn out to be useful to notch filter the servo motor control outputs for any observed
+         system sympathetic resonance.
+      <p>Feedback Control :  Three 1KHz PID loops are necessary to control the yaw, pitch and
+         roll axis which will use the gyroscope data. The inputs for each of these loops will
+         be the result that we desire on each on each the integrated gyroscope axis - which can
+         be imagined as something like the angle that we would like. The output
+         of these loops will be combined up to generate servo commands to each of the four motors.
+         Suppose for example we would like to move forward - the transmitter sends a servo pitch
+         value that specifies a desired forward tilt to the craft. The control loop will speed 
+         up the back rotors, lifting the back of the drone (and creating force in x axis) until 
+         the gyroscope catches up to the forward tilt command, the speed and stability of this 
+         transaction is determined by the P, I and D loop multipliers. Gyroscope data is useful 
+         to keep the craft in a desired attitude (not rotating on x (yaw), y (roll) or z (pitch) 
+         axes), these are the inner high speed, 1KHz, portion of the control circuit.
+         <br>The accelerometer data provides information to the control loop that helps to
+         imply an xyz point that we wish to maintain. Each of these axes will also have a PID loops
+         moderating corrections, these are the outer 50Hz portion of the control circuit. For example, 
+         if the wind is blowing the gyroscope would not notice it (unless the drone was being twisted)
+         but the accelerometer would notice an x or y acceleration. This can be somewhat controlled out
+         with accelerometer data PID loops whose output is feed into the gyroscope PID loops
+         just like transmitter pitch or roll inputs (ie I'm getting pushed to the right by a
+         force so lean into it - P gain is how much to lean, I gain is how much to recover from
+         a previous uncorrected push and D gain tells to loop closure to slow down once you start getting 
+         close). In software, PID loops are very simple - an error signal is generated at the input
+         which is the difference between the angle that you want the quadcopter to be in and the
+         angle that the gyroscope measures that it is in. The error then follows three paths.
+         The P(roportional) path is simply multiplied by the P gain. The I path has an accumulator
+         which is the sum of all previous error inputs which is multiplied by I(ntegral) gain.
+         The D(erivative) path is the difference between the current error signal and the 
+         previous one which is then multiplies by the D gain. The output of the loop is the sum
+         of these three, PID, paths which are combined with the other gyroscope PID loops outputs
+         to generate motor speed commands. Tuning the loop gain parameters can either be done by
+         simulation or tuning the actual system flight response.
+      <p>BlackBox Telemetry : A data packet will be sent to the ground station for collection
+         every 20ms (50 times per second). The payload frame will contain the filtered acceleration
+         3 axis data, slots for future use (magnetometer, status, estimated altitude, etc) within 
+         the first 50 bytes. Initially, 150 bytes will be reserved for the raw gyroscope datar,
+         eventually we will use bits in a configuration word to determine the configuration of the
+         payload (if for example we would like to collect raw motor servo data).
+      <p>Milestones : First target is to collect all necessary data and blackbox it down to the
+         ground station every 20mssec. The accelerometer data will be filtered. The gyroscope data
+         will be sent down as raw byes from the mpu6050 fifo read. First test flights will probably
+         be with the CC3D flight controller doing the actual work and the data being collected by
+         the esp32 flight controller only reporting gyroscope and accelerometer data. Next step will
+         be to start programming CC3D flight controller with PID gains of 1,0,0, which basically
+         shuts off PID and sends input data to motors. Then lastly control motors directly from
+         esp32 flight controller.
+      <p>----------- Log Entry (10-04-19) -------------
+      <p>Got done building and testing a 50msec loop in the esp32 flight controller that reads three
+         axes of acceleration data, from a mpu6050, and filters it through a 4 pole butterworth.
+         Also wrote an acceleration calibration subroutine. 
+         Tried several differnet cut-off frequencies, 0.25, 1, 4 and 10 Hz. The output displays roll 
+         and pitch in degrees and the z-axis gravity. Just sitting on my desk running the 1Hz filter
+         pitch and roll outputs were always within +/-0.2degrees and z-axis from 0.9994-1.005g. Tilting
+         board 45 degrees gave me 45 degress roll or pitch and .707g z-axis. The 1Hz filter was steadier 
+         than the 4 or 10Hz filters and the 0.25Hz just felt a little too slow.
+      <p>Started work on 20msec loop that will read 1KHz gyroscope outputs and process that data trough
+         the integrators and PID that will eventually supply the motor outputs, the ESCs that came
+         with my kit only take servo inputs so I will eventially have to deal with that. 
+      <p>My daughter and I have kit mostly all built up to the point where we need to start doing some
+         soldering. Added a DC-DC converter to supply esp32 and CC3D.
    </div>
          
    <ul id="rside">
