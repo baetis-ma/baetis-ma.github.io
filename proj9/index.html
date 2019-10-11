@@ -5,7 +5,8 @@
       <style>
         h1 { text-align:center; }
         p {color:SaddleBrown;}
-        img { position:absolute;top:20%;left:40%;  }
+        #img0 { position:absolute;top:20%;left:40%;  }
+        #img1 { float:right;margin-right:50px;margin-left:20px;  }
         #intro { float:right;width:85%;margin-left:50px;margin-right:50px;
                  position:absolute;top:72%; font-size:small; }
         #rside { position:absolute;top:100px;font-size:x-small; }
@@ -15,7 +16,7 @@
    <body>
 
    <h1>F450 Drone Build with ESP</h1>
-      <img src="./f450kit.jpg" style="width:35%;">
+      <img id="img0" src="./f450kit.jpg" style="width:35%;">
    <div id="intro">
       <p>This is an esp-idf project with an ESP32 acting as a flight controller and receiver
          for F450 quadcoptor drone and an esp8266 D1 mini as radio control transmitter.
@@ -247,17 +248,46 @@
       <p>----------- Log Entry (10-04-19) -------------
       <p>Got done building and testing a 50msec loop in the esp32 flight controller that reads three
          axes of acceleration data, from a mpu6050, and filters it through a 4 pole butterworth.
-         Also wrote an acceleration calibration subroutine. 
+         Also wrote an acceleration calibration subroutine (average of 16 measurements), also bought
+         a small (32mm diameter) xy spirit level from ebay (75 cents) to mount on the quadcopter. 
          Tried several differnet cut-off frequencies, 0.25, 1, 4 and 10 Hz. The output displays roll 
          and pitch in degrees and the z-axis gravity. Just sitting on my desk running the 1Hz filter
-         pitch and roll outputs were always within +/-0.2degrees and z-axis from 0.9994-1.005g. Tilting
+         pitch and roll outputs were always within +/-0.2degrees and z-axis from 0.9997-1.003g. Tilting
          board 45 degrees gave me 45 degress roll or pitch and .707g z-axis. The 1Hz filter was steadier 
-         than the 4 or 10Hz filters and the 0.25Hz just felt a little too slow.
+         than the 4 or 10Hz filters and the 0.25Hz just felt a little too slow. Found it really impressive
+         how just pushing the board across the desk gives a real actionable signal - bet you could even
+         build a pretty reasonable mouse. It also gives a strong integral signal that will be used to
+         stand up against wind or returning to a location that it was pushed out of.
       <p>Started work on 20msec loop that will read 1KHz gyroscope outputs and process that data trough
          the integrators and PID that will eventually supply the motor outputs, the ESCs that came
-         with my kit only take servo inputs so I will eventially have to deal with that. 
-      <p>My daughter and I have kit mostly all built up to the point where we need to start doing some
-         soldering. Added a DC-DC converter to supply esp32 and CC3D.
+         with my kit only take servo inputs so I will eventially have to deal with that. Collecting the
+         data and doing limited processing is not unveiling any cpu resource problems at this point. I
+         am getting more confident that this can work. 
+      <p>Hardware wise, my daughter and I have kit mostly all built up to the point where we need to 
+         start doing some soldering. Added a DC-DC converter to supply esp32 and CC3D.
+      <p>----------- Log Entry (10-11-19) -------------
+      <p>Last week we spent time doing all the placement, wiring soldering and heat shrink to our kit
+         <img id="img1" src="./montanawiring.jpg" style="width:35%;">
+         and it is looking pretty good. Montana has been taking the mechanical/hardware lead and logging
+         most of the flight time while I have been sticking to the systems and sodtware end of things. 
+       
+      <p>Got a loop working with the ESP32 doing an SPI read of an MPU9250 reading gyroscope data being 
+         loaded into fifo at 1K samples per second. I'm currently stuck getting the fifo dumps to run faster
+         than 10ms (with an occasional 20ms) and the mpu9250 fifo length is 512 bytes - so I really can't
+         quite get 8K samples per second to work - this will be revisited once 1K samples/sec working and
+         deemed insufficient. There are several ways to do this that should be possible but going to try
+         1K samples/sec first and make sure everything else works too. Setup integrators and PID controls
+         and starting serious consideration of how to weight these in with control channels...
+      <p>Considering taking a brief simulation detour but can't find much performance data to make calculations
+         with. Without a good simulation, or proably even with one, need arises to develop good testing
+         flows with realtime feedback to tune control system from total scratch. The default PID, filter and
+         control flow of default CC3D controller with cleanflight are kind of surprisingly good. First test
+         liftoffs of drone with direct motor control from master (a lied and attached props - but took
+         teethering procaustions) were predictable very unstable. We attached CC3D flight controller with
+         default settings, and after an initial try out where the flight controller was attached to frame
+         not pointing forward - resulting in instant crash, jumped up to a hover and shows signs of real
+         controlled flight. The joysticks that I have are still a major fustration (new ones on boat from 
+         china) but the drone does fly and my daughter is getting pretty good at handling it.
    </div>
          
    <ul id="rside">
