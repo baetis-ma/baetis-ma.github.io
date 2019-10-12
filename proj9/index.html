@@ -269,8 +269,21 @@
       <p>Last week we spent time doing all the placement, wiring soldering and heat shrink to our kit
          <img id="img1" src="./montanawiring.jpg" style="width:35%;">
          and it is looking pretty good. Montana has been taking the mechanical/hardware lead and logging
-         most of the flight time while I have been sticking to the systems and sodtware end of things. 
-       
+         most of the flight time while I have been sticking to the systems and sodtware end of things.
+         The CC3D hooked up to cleanflight easily and we got the escs calibrated on the motors tab page,
+         the motors all started at 1032 and sounded good.
+         Next the props were reinstalled, the drone teethered and we spun up the motors a bit. Liftoff
+         was shortly followed by instability and crash into pillows setup all around. Neither of us has
+         never researched the actual mechanics of drone flight or ever flown a drone and it took a while
+         to figure out the throttle=1000,yaw=2000 arming proceedure. The transmitter was not sending full 
+         range so a few lines had to be added to code to arm and disarm. Our first test was a very short
+         one endinging in what looked like a powered crash instead of just instability, quickly realized 
+         flight controller needed to be facing forward so that correct motors would be getting corrections. 
+         We did have a few newbie hickcups along the way - at first we, incorrectly, assumed the 1045R 
+         props would go on the counterclockwise motors. Next we neglected to align the CC3D flight
+         controller in the forward direction of the quadcopter as defined by out motor hookup.
+      <p>Test flights are continuing and we are getting the hang of hovering and moving around a bit. The
+         horrid joysticks are difficult to get used to and we are looking forward to replaceing them. 
       <p>Got a loop working with the ESP32 doing an SPI read of an MPU9250 reading gyroscope data being 
          loaded into fifo at 1K samples per second. I'm currently stuck getting the fifo dumps to run faster
          than 10ms (with an occasional 20ms) and the mpu9250 fifo length is 512 bytes - so I really can't
@@ -288,6 +301,13 @@
          not pointing forward - resulting in instant crash, jumped up to a hover and shows signs of real
          controlled flight. The joysticks that I have are still a major fustration (new ones on boat from 
          china) but the drone does fly and my daughter is getting pretty good at handling it.
+      <p>----------- Log Entry (10-12-19) -------------
+      <p>The CC3D that we have only seems to support gyroscope innerloop PIDs and accelerometer data is not 
+         used. My hope in this project is not to build a racing drone but to build a drone that is stable
+         and responds to commands with precision. The software for the gyroscope output inner control circuit
+         is well underway, the focus now will shift to experimenting with accelerometer output to see how well
+         it will calculate relative x, y and z distances (in feet) from where it was startup to see if this data
+         can be accurate enough to run an outer loop. 
    </div>
          
    <ul id="rside">
