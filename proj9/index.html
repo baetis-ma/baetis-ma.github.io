@@ -285,12 +285,8 @@
       <p>Test flights are continuing and we are getting the hang of hovering and moving around a bit. The
          horrid joysticks are difficult to get used to and we are looking forward to replaceing them. 
       <p>Got a loop working with the ESP32 doing an SPI read of an MPU9250 reading gyroscope data being 
-         loaded into fifo at 1K samples per second. I'm currently stuck getting the fifo dumps to run faster
-         than 10ms (with an occasional 20ms) and the mpu9250 fifo length is 512 bytes - so I really can't
-         quite get 8K samples per second to work - this will be revisited once 1K samples/sec working and
-         deemed insufficient. There are several ways to do this that should be possible but going to try
-         1K samples/sec first and make sure everything else works too. Setup integrators and PID controls
-         and starting serious consideration of how to weight these in with control channels...
+         loaded into fifo at 8K samples per second, 32K samples looks doable - prehaps could be revisited
+         later if everything else works.
       <p>Considering taking a brief simulation detour but can't find much performance data to make calculations
          with. Without a good simulation, or proably even with one, need arises to develop good testing
          flows with realtime feedback to tune control system from total scratch. The default PID, filter and
@@ -308,7 +304,33 @@
          is well underway, the focus now will shift to experimenting with accelerometer output to see how well
          it will calculate relative x, y and z distances (in feet) from where it was startup to see if this data
          can be accurate enough to run an outer loop. 
-   </div>
+      <p>----------- Log Entry (10-30-19) -------------
+      <p>Haven't updated in a while and a some progress has been made. The CC3D is long gone and am running 
+         with ESP32. All motors are hooked up and can calibrate mpu9250 and ESCs. A one axis test jig was setup
+         with a metal rod through the 2-4 motor axis. Made good progress in developing PID controllers and
+         tuning gain parameters - with this test rig was able to get drone to hold 0.1 degree 1 sigma and
+         respond to upsets and settle out within a second. 
+      <p>Removed metal rod and hanging drone from ceiling now. Cut in the other inner loop PIDs and correcting
+         for yaw, pitch and roll disturbences pretty well at lowish throttle settings - need to set up better
+         thethering further from desk. 
+      <p>Received new joysticks and they are much better, mounted them in cigar box along with esp8266 mini, 
+         ad1015 and battery. Turns out the esp products have a pretty nastey current spike during wifi transmit
+         which is not very well bealt with on module. These spikes were intefering with adc data collection
+         on the order of about 5% errors. I was able to reduce this by about half with simple filtering, if
+         I were to lay this ouot on pcb and use some decent ultralow esr capacitors the noise could be
+         reduced further. Synchronizing the adc reads so that they occur when the wifi transmit is not
+         active reduced the effect of the noise spike. Originally, the wifi transmits and receives were
+         entered into an event que which added unpredictablity into knowing when they would happen. I pulled
+         the wifi transmit from the event handler and issued it directly 20msec after starting the adc
+         measurements and the problem pretty much went away. There are still some collisions with a 40msec
+         update/packet rate, but they are reduced to a single event every few minutes. Filtering 
+         techniques help diminish the potential impact of the noise to where I am monitoring less than
+         1% upsets isolated to 100msec only occuring at less than 1 per minute.
+      <p>Next I plan to integrate the receiver code into my ESP32 flight controller software and try
+         some tethered manuvers. Then to improve tehering so that hovering flight can be tested out
+         indoors. Also, still have to consider the blackbox data that would be nice to be downloading
+         transmitter ground station.
+      </div>
          
    <ul id="rside">
       <a href="https://baetis-ma.github.io/index.html">baetis-ma HOME</a>
