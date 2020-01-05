@@ -18,17 +18,25 @@
    <h1>LiPo Battery Tool</h1>
       <img id="img0" src="./lipohtml.png" style="width:45%;">
    <div id="intro">
-      <p>This is an esp-idf project 
-      <p>The project the following
-         <ul><li> Monitor Cell Voltages of LiPo Battery stack
-             <li> In Charge Mode : charge each battery to 4.1 Volts at preset current
-                  while monitoring charge
-             <li> In Discharge Mode : monitor discharge of battery at preset ceurrent 
-                  while monitoring charge
-             <li> In Discharge to 3.8 Volt Mode : leave battery at 2.8 Volts by discharging
-                  or charging
+       <p>This is an esp-idf project with the purpose of outputting a LiPo battery
+         tester and charger. My daughter and I have recently begun flying some
+         drones and find ourselves in posession various 1S, 2S and 3S cells. They were
+         all very inexpensive and/or used and seem to vary a bit in power storage -
+         we would like to check out our batteries to find which are best and build
+         a charger with more capabilities than the ones we have.
+      <p>Plans are to have a standalone ESP and hardware assembly with a 1inch OLED
+         display, a 3 ohm power load, 0-2A programmable current source and a 4
+         channel ADC. Assembly control, monitoring and data analysis via webpage.
+      <p>Design Goals
+         <ul><li> Monitor Cell Voltages of LiPo Battery stack.
+             <li> In Charge Mode : charge each battery to 4.2 Volts at preset current (0-2A)
+                  while monitoring charge.
+             <li> In Discharge Mode : monitor discharge of battery into a fixed 3 ohm load
+                  while integrating charge to determine battery capacity.
+             <li> In Discharge to 3.8 Volt Mode : get battery to 3.8 Volts by discharging
+                  or charging prior to period of inactivity.
+             <li> Using PCF8591
          </ul>
-      <p>This is an esp-idf project 
    </div>
          
    <ul id="rside">
