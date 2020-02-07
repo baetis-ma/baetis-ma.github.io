@@ -5,194 +5,113 @@
       <style>
         h1 {color:Brown; text-align:center; }
         p {color:SaddleBrown;}
+        div {text-align:center;}
         #intro { width:80%;margin-left:auto;margin-right:auto;font-size:small }
         #projs { float:left;width:33%;font-size:12px; }
       </style>
    </head>
    <body>
 
-      <h1>baetis-ma projects</h1>
+      <h1>baetis-ma navigation page</h1>
       <div id="intro">
          <p> This page and asociated repositories contain the results 
-         of several recent projects, mostly involving the ESP8266 and ESP32
-         IoT modules.  </p>
-         <p> Some of the earlier ESP8266 projects were done with lua and 
-         esplorer, and later nodemcu-tool. The more recent projects are
-         in the esp-idf environment.
+         of several of a hobbist's recent projects within the last couple 
+         years,
+         mostly involving the ESP8266 and ESP32 IoT modules.  </p>
+         <p> Some of the earlier ESP8266 projects were done with arduno ide,
+         then, lua and esplorer, and later nodemcu-tool. The more recent 
+         projects are in the esp-idf environment.
          </p>
       </div>
 
       <div id="projs" >
       <figure>
-        <img src="./proj10/lipohtml.png" style="width:150px;height:150px">
+        <img src="./proj10/lipohtml.png" style="width:auto;height:150px">
         <figcaption>
            <a href="./proj10/index.html">LiPo Battery Tools</a>
         </figcaption>
-        <p>This is an esp-idf project with the purpose of outputting a LiPo battery
-           tester and charger. My daughter and I have recently begun flying some
-           drones and find ourselves in posession various 1S, 2S and 3S cells. They were 
-           all very inexpensive and/or used and seem to vary a bit in power storage -
-           we would like to check out our batteries to find which are best and build
-           a charger with more capabilities than the ones we have.
-        <p>Plans are to have a standalone ESP and hardware 4sassembly with a 1inch OLED 
-           display, a 3 ohm power load, 0-1.5A programmable current source and a 4
-           channel ADC. Assembly control, monitoring and data analysis via webpage.
-        <br><br><br>
-        </p> 
       </figure>
       </div>
 
       <div id="projs" >
       <figure>
-        <img src="./proj9/f450kit.jpg" style="width:150px;height:150px">
+        <img src="./proj9/f450kit.jpg" style="width:auto;height:150px">
         <figcaption>
            <a href="./proj9/index.html">F450 Drone with ESPs</a>
         </figcaption>
-        <p>This is an esp-idf project with an ESP32 acting as a flight controller and 
-           receiver for F450 quadcoptor drone and an esp8266 D1 mini as radio control 
-           transmitter.  Presently the project has a transmitter (as seen in the picture) 
-           with two joysticks and a display. Throttle, yaw, pitch and roll data are 
-           transmitted with espnow protocol to the esp32 receiver and telemetry (blackbox) 
-           data are returned.  The esp32 sends flight control channel data to CC3D with SBUS 
-           protocol and receives telemetry data from CC3D with MSP protocol. 
-        </p> 
       </figure>
       </div>
 
       <div id="projs" >
       <figure>
-        <img src="./proj7/dht_home_sheet.png" style="width:150px;height:150px">
+        <img src="./proj7/dht_home_sheet.png" style="width:auto;height:150px">
         <figcaption>
            <a href="./proj7/index.html">DHT Home Network</a>
         </figcaption>
-         <p>This is an esp-idf project with ESP32S, five esp8266 modules, 
-            six DHT modules and an SSD1306 display. Temp
-            and Humidity are taken about every two seconds and broadcast from
-            a udp socket on each of the remot:we esp8266s. The esp32 base station collects
-            the packet data from the five remote stations and updates the ssd1306 display
-            as well as fowarding the data to google sheets for archeiving and display.
-            <br> <br> <br><br>
-         </p> 
       </figure>
       </div>
 
       <div id="projs" >
       <figure>
-        <img src="./proj8/combined.jpg" style="width:150px;height:150px">
+        <img src="./proj8/combined.jpg" style="width:auto;height:150px">
         <figcaption>
-           <a href="./proj8/index.html">OLED Display with ADC and Microphone</a>
+           <a href="./proj8/index.html">OLED with ADC and Mic</a>
         </figcaption>
-        <p>
-        This is an esp-idf project with an ESP32S, a pcf8591 adc, a max9814 microphone and 
-         an SSD1306 128x64 oled display. The project is in two parts, the first shows the
-         waveform of sound picked up by the micophone and the seocond shows the frequency.
-         <br> <br><br> <br> <br> <br><br>
-        </p> 
       </figure>
       </div>
 
       <div id="projs" >
       <figure>
-        <img src="./proj4/hcm5883ss.png" style="width:150px;height:150px">
+        <img src="./proj4/hcm5883ss.png" style="width:auto;height:150px">
         <figcaption>
            <a href="./proj4/index.html">Magnetometer Development</a>
         </figcaption>
-        <p>
-        This is an esp-idf project with a ESP32S and an HMC5883L I2C magnetometer
-        module. The page shows an image of the actual orientation of the 
-        magnetometer (when the module is upside down the bottom shows) as well
-        as a graph of the x, y and z axis flux and graph of the extracted spherical 
-        coordinates theta and phi and a 3D plot of the flux vector.<br> <br>
-        </p> 
       </figure>
       </div>
 
       <div id="projs" >
       <figure>
-        <img src="./proj2/hr.png" style="width:150px;height:150px">
+        <img src="./proj2/hr.png" style="width:auto;height:150px">
         <figcaption>
            <a href="./proj2/index.html">esp32 heartrate monitor</a>
         </figcaption>
-        <p>
-        ESP32 serving up a webpage with live update of MAX30102 sample
-        data. The esp32 initializes max30102 to take 100 samples/sec of
-        each the IR and red led reflected energy. This data is packaged,
-        filtered and forwarded to client browser. Heart rate and Oxygen concentration 
-        are calulated and raw data displayed.
-        <br><br>
-        <br><br>
-        <br><br>
-       </p> 
       </figure>
       </div>
 
       <div id="projs" >
       <figure>
-        <img src="./proj3/screenshot.png" style="width:150px;height:150px">
+        <img src="./proj3/screenshot.png" style="width:auto;height:150px">
         <figcaption>
            <a href="./proj3/index.html">MPU6050 development aid</a>
         </figcaption>
-        <p>
-        UNDER DEVELOPMENT WAITING ON A BOAT FROM CHINA. 
-        This project is a development tool to begin playing around with a MPU6050
-        monolithic three axis accelerometer and three axis gyroscope. Web controls
-        are available for controlling the register configuration and graphs are
-        available to monitor the six axis measurement data.
-        <br><br>
-        </p> 
       </figure>
       </div>
 
       <div id="projs" >
       <figure>
-        <img src="./proj6/ssd1306.jpg" style="width:150px;height:150px">
+        <img src="./proj6/ssd1306.jpg" style="width:auto;height:150px">
         <figcaption>
            <a href="./proj6/index.html">Atmosphere Monitor</a>
         </figcaption>
-        <p>
-        This is an esp-idf project with an ESP32S, an SSD1306 128x64 oled
-        display, a BMP280 i2c pressure sensor and a dht22 Temperature
-        and humidity sensor. Readings are taken about once per second
-        and updated to the ssd1306 display.
-        <br> <br> <br><br> <br> <br> 
-        </p> 
       </figure>
       </div>
 
 
       <div id="projs" >
       <figure>
-        <img src="./proj1/helloworld.png" style="width:150px;height:150px">
+        <img src="./proj1/helloworld.png" style="width:auto;height:150px">
         <figcaption>
            <a href="./proj1/index.html">esp32 simple website</a>
         </figcaption>
-        <p>ESP32 serving up a simple webpage. The code in the 
-        repository also verified
-        working with ESP8266_RTOS_SDK environment for esp8266. 
-        Includes framework for sharing two way data communication 
-        between browser (buttons/text fields) and esp tcp server
-        (collected data from perifierals).
-        Basic directions for setting up build indluded.
-        <br> <br>
-        <br> <br>
-        <br> <br>
-        </p> 
       </figure>
       </div>
 
       <div id="projs" >
       <figure>
-        <img src="./proj5/dht.png" style="width:150px;height:150px">
+        <img src="./proj5/dht.png" style="width:auto;height:150px">
         <figcaption>
            <a href="./proj5/index.html">dht home network</a>
         </figcaption>
-        <p>
-        One of my earlier ESP8266 projects using nodeMCU and the lua language.
-        A number of remote esp8266 and DHT-11 combos broadcast json encapsulated
-        temperature and humidity data to udp sockets about once per second.  
-        The base station serves the webpage, collects the udp packets and combines 
-        them via tcp server for presentation the browser.
-        </p> 
       </figure>
       </div>
 
