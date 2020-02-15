@@ -19,21 +19,36 @@
       <img src="./hcm5883ss.png" style="width:40%">
    <div id="intro">
       <p>This is an esp-idf project with a ESP32S and an HMC5883L I2C magnetometer
-         module. The webpage updates every 300msec and has several page 
-         divs described below
+         module. Recently ordered new magnetometer and found a part change, the
+         qms588l i2c address and registers are completely different, programs 
+         are included for either device.
+      <p>These are amazing little mems devices able to measure minute magnetic
+         fields as indeed is the earth magnetic field at the surface. Care must
+         be taken in operating these device away from items that are ferroelectric,
+         conducting current or able to alter earth's field locally or results can
+         be affected substaincally - like 2 inches from an iron screw. This product
+         helps you evaluate to what extent you can take advantage of the magnetometer in
+         your application's code. As you move through all the axes combinations to
+         get some ifeel for the device and some good calibration numbers, for the 
+         current placement of the
+         magnetometer, an area showing the calibration code is shown for cut
+         and paste.
+      <p>The webpage updates at programmable interval up to about 5 times per
+         second before tcp transactions start backing up. The page holds several 
+         data presentation divs described below
          <ul><li> a list of calculated parameters so you can monitor the
                   calibration progress and check the cartesian to spherical
-                  conversion. The 'normalized' x, y and z measurements are 
-                  converted to spherical coordinates with these equations
+                  conversion. 
                   <ul><li> magnitude = Math.sqrt(x*x + y*y + z*z)
-                      <li> theta = Math.acos ( z / magnitude)
-                      <li> phi = Math.acos ( x / Math.sqrt(x*x + y*y))
+                      <li> theta = 57.3 * Math.acos ( z / magnitude)
+                      <li> phi = 57.3 * Math.atan ( y / x )
+                      <li> if (x < 0) phi = phi + 180
                   </ul>
                   The magnitude comes out very close to 1 after calibration
-                  and represents the total magnetic field. theta is how much
+                  and represents the total magnetic fieldi (about 50,000 nT). 
+                  theta is how much
                   that vector is rotates from straight up and phi is how 
-                  much the vertor is rotated on the x-y plane from the positive
-                  x axis. 
+                  much the vertor is rotated on the x-y plane.
              <li> an image of the actual orientation of the magnetometer. As
                   the screen updates several time per second the image of
                   the module is presented with a css transform with the
@@ -44,15 +59,19 @@
                      rotateZ("+phi+"deg)";</font></ul>
                   When the theta measurement is between 90-270 degrees a
                   bottom side image of the module is displayed instead to the
-                  top.
-             <li> a plotly graph of the x, y and z axis flux is displayed on 
-                  top graph.
+                  top - at this point I have not grasped the math of coverting
+                  the z axis tilt separated into x and y rotations so the
+                  x and y rotations are currently zeroed out.
+             <li> a plotly graph of the 'normalizing' x, y and z axis flux is 
+                  displayed on top graph. The device is contineously being
+                  calibrated and as the min and max for each axes are updated
+                  and the old data along with the new are reploted. 
              <li> and a graph of the extracted spherical coordinates theta 
                   (tilt) and phi (xy axis rotation) is diectly underneath.
              <li> a plotly 3D plot of the flux vector is on the lower left
-                  of the screen. While the screen is updating you cant
-                  work the responsive controls so a stop 3d plot update button
-                  is available.
+                  of the screen. The 3d plot loses the page a little 
+                  reponsiveness so a button to shut off the 3d graph is included.
+             <li> Button included to restart calibration.
          </ul>
       <p>When the device was being read at about 50 xyz measurements
          per second the magnetometer was getting seriously hot. At 10
